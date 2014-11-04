@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'OpenSansRegular';
+	src: url('./OpenSansRegular.eot');
+	src: local('OpenSansRegular'), url('./OpenSansRegular.woff') format('woff'), url('./OpenSansRegular.ttf') format('truetype');
+}
+/* use this class to attach this font to any element i.e. <p class="fontsforweb_fontid_38327">Text with this font applied</p> */
+.fontsforweb_fontid_38327 {
+	font-family: 'OpenSansRegular' !important;
+}
+
+/* Font downloaded from FontsForWeb.com */

@@ -1,0 +1,282 @@
+#banner{
+	width: 100%;
+	border-radius: 10px;
+	margin-top: 20px;
+	margin-bottom: -20px;
+}
+
+body {
+ 	background: rgb(2,10,18) url("images/CMN_Background.jpg");
+	margin: 0px;
+}
+
+/* --------- -------------- --------- */
+/* --------- Navigation bar --------- */
+/* --------- -------------- --------- */
+
+.navbar {
+	height: 50px;
+	background-image: url("images/CMN_navigationbar_background.jpg");
+	background-size: contain;
+	margin-bottom: 12px;
+	border-top: 1px solid rgb(20, 39, 87);
+}
+
+.navbar {background-color: rgb(2, 10, 18);}
+.navbar-default .navbar-nav > li > a, .navbar-default .navbar-brand {color: #f1f1f1;}
+.navbar-default .navbar-nav > li > a:hover, 
+.navbar-default .navbar-nav > li > a:focus {color: #f1f1f1; background-color: rgb(2, 10, 18);}
+
+@media only screen and (max-width: 766px) {
+.collapsing, .in {background-image: url(images/CMN_navigationbar_background.jpg);}
+.collapsing ul li a, .in ul li a {color: #555!important;}
+.collapsing ul li a:hover, .in ul li a:hover {color: #f1f1f1!important;}
+}
+
+.navbar-collapse{
+	text-align: center;
+	background-size: contain;
+	backface-visibility: hidden;
+}
+
+.navbar-right li{
+	/*margin-left: 20px;*/
+}
+
+.pull-left li{
+	/*margin-left: 15px;*/
+}
+
+#navigation_bar2 {
+	width: 100%;
+	height: 20px;
+	background-color: rgb(2, 10, 18);
+	background-image: url("images/CMN_navigationbar2_background.jpg");
+	background-size: contain;
+	margin-bottom: 20px;
+	border-top: 3px solid #171427;
+	border-bottom: 1px solid black;
+}
+
+/* --------- -------------- ---------- */
+/* ------------ Title bar ------------ */
+/* --------- -------------- ---------- */
+
+#title_triangle {
+	width: 55px;
+	display: inline;
+	margin-left: 10px;
+}
+
+h3 {
+	padding-bottom: 10px;
+	padding-left: 10px;
+}
+
+.content_block#block_title{
+	margin-top: 50px;
+}
+
+/* --------- -------------- ---------- */
+/* --------- Content blocks ---------- */
+/* --------- -------------- ---------- */
+
+.btn{
+	margin-right: 20px;
+	background-color:  rgb(110, 151, 255);
+}
+
+.carousel{
+	margin-bottom: 60px;
+}
+
+.fotorama__caption {
+    text-align: center;
+}
+
+.carousel h3{
+	color: rgb(86, 230, 255);
+	font-family: sans-serif;
+	line-height: 250%;
+	text-indent: 2em;
+}
+
+.content_block {
+	display: inline-block;
+	width: 100%;
+	background-color: rgb(2, 10, 18);
+	border-top: 1px solid rgb(11, 20, 44);
+	border-bottom: 1px solid rgb(11, 20, 44);
+	
+}
+
+.content_block table{
+	width: 100%;
+	height: 100%;
+	background-color: rgb(2, 10, 18);
+}
+
+#cb_top_left img{
+	height: 25px;
+	width: 25px;
+	float: left;
+}
+
+#cb_top_right img{
+	height: 25px;
+	width: 25px;
+	float: right;
+}
+
+#cb_bottom_left img{
+	height: 25px;
+	width: 25px;
+	float: left;
+}
+
+#cb_bottom_right img{
+	height: 25px;
+	width: 25px;
+	float: right;
+}
+
+#cb_top{
+}
+
+#cb_left{
+	border-left: 1px solid rgb(20, 39, 87);
+}
+
+#cb_right{
+	border-right: 1px solid rgb(20, 39, 87);
+}
+
+#cb_bottom{
+}
+
+#cb_center p{
+	color: rgb(73, 187, 207);
+	font-size: 1em;
+	font-family: sans-serif;
+	line-height: 130%;
+	text-align: justify;
+}
+
+#cb_center{
+	color: rgb(86, 230, 255);
+	font-size: 1.1em;
+	width: 90%;
+	font-family: sans-serif;
+	line-height: 130%
+}
+
+span {
+	font-size: 2em;
+	text-transform: uppercase;
+}
+
+.col-md-12 {
+	margin-bottom: 40px;
+}
+
+.col-md-10 {
+	margin-bottom: 40px;
+}
+
+.col-md-5 {
+	margin-bottom: 40px;
+	margin-top: -25px;
+}
+
+.col-md-5 p{
+	margin-left: 10px;
+}
+
+p a{
+	
+}
+
+.modal-header {
+	color: red;
+}
+
+.thumbnail{
+	background-color: black;
+	border-color: black;
+}
+
+/* --------- -------------- --------- */
+/* ------------- Footer ------------- */
+/* --------- -------------- --------- */
+
+.footer{
+	background: linear-gradient( 0deg, rgba(0, 0, 0, 0.8) 60%, rgba(2, 10, 18, 0.2));
+	height: 90px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.footer h6 {
+	margin-top: 40px;
+}
+
+/* --------- -------------- --------- */
+/* ------------- Effects ------------ */
+/* --------- -------------- --------- */
+
+/* Float Shadow */
+.float-shadow {
+  display: inline-block;
+  position: relative;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.float-shadow:before {
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+  content: '';
+  top: 100%;
+  left: 5%;
+  height: 10px;
+  width: 90%;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(20, 39, 87, 0.35) 20%, rgba(0, 0, 0, 0) 85%);
+  /* W3C */
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform, opacity;
+  transition-property: transform, opacity;
+}
+.float-shadow:hover, .float-shadow:focus, .float-shadow:active {
+  -webkit-transform: translateY(-5px);
+  transform: translateY(-5px);
+  /* move the element up by 5px */
+}
+.float-shadow:hover:before, .float-shadow:focus:before, .float-shadow:active:before {
+  opacity: 1;
+  -webkit-transform: translateY(5px);
+  transform: translateY(5px);
+  /* move the element down by 5px (it will stay in place because it's attached to the element that also moves up 5px) */
+}
+
+/* Shrink */
+.shrink {
+  display: inline-block;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.shrink:hover, .shrink:focus, .shrink:active {
+  -webkit-transform: scale(0.98);
+  transform: scale(0.98);
+}
