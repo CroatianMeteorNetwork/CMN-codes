@@ -3,6 +3,14 @@ CMN-codes
 
 A small preview of codes I use for working with Croatian Meteor Network.
 
+  * ## CMN website
+  
+  A complete code for the Croatian Meteor Network Website currently located at http://cmn.rgn.hr/
+
+  * ## CMNdownloader 
+  
+  Python script used to automatically (some data is downloaded daily, some every 6 hours) download images from several websites and their corresponding data from the same websites. The data is located in .txt format or in html code and is saved in .txt format
+
   * ## FF_bin_suite 
   
   Required for using [CMN_bin_viewer](http://cmn.rgn.hr/binviewer/binviewer.html) software: 
