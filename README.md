@@ -9,12 +9,6 @@ CMN-codes
   
   Python script used to automatically (some data is downloaded daily, some every 6 hours) download images from CMOR radar and NASA fireball network, and their corresponding data from the same websites. The data is located in .txt format or in html code and is saved in .txt format
 
-  * ## FF_bin_suite 
-  
-  Required for using [CMN_bin_viewer](http://cmn.rgn.hr/binviewer/binviewer.html) software: 
-  It is a collection of functions and examples how to work with CAMS standard *.bin files (rading the format and building individual frames).
-  It also contains optimized functions for image processing such as levels adjustment, dark frame subtraction, flat fielding, image stacking, etc.
-
   * ## HMM_radio2txt
   
   Converting WAV files to *.txt format
