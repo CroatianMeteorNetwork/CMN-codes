@@ -9,6 +9,10 @@ CMN-codes
   
   Python script used to automatically (some data is downloaded daily, some every 6 hours) download images from CMOR radar and NASA fireball network, and their corresponding data from the same websites. The data is located in .txt format or in html code and is saved in .txt format
 
+  * ## SuperBind
+
+  Enable any key to have unique events on being pressed once or being held down longer for Tkinter.
+
   * ## HMM_radio2txt
   
   Converting WAV files to *.txt format
