@@ -19,7 +19,7 @@
 from Tkinter import *
 
 class SuperBind():
-    """ Enable any key to have proper events on being pressed once or being held down longer.
+    """ Enable any key to have unique events on being pressed once or being held down longer.
 
         pressed_function is called when the key is being held down.
         release_function is called when the key is pressed only once or released after pressing it constantly
@@ -31,14 +31,19 @@ class SuperBind():
             pressed_function - function to be called when the key is pressed constantly
             release_function - function to be called when the key is released or pressed only once
 
+            repeat_press - if True, pressed_function will be called before release_function on only one key press (default True)
+            no_repeat_function - will be run if repeat_press is False (default is None)
+
         e.g. calling from master class:
         a_key = SuperBind('a', self, self.root, self.print_press, self.print_release)
     """
 
-    def __init__(self, key, master, root, pressed_function, release_function):
+    def __init__(self, key, master, root, pressed_function, release_function, repeat_press = True, no_repeat_function = None):
         self.afterId = None
         self.master = master
         self.root = root
+        self.repeat_press = repeat_press
+        self.no_repeat_function = no_repeat_function
 
         self.pressed_function = pressed_function
         self.release_function = release_function
@@ -52,15 +57,18 @@ class SuperBind():
         if self.afterId != None:
             self.master.after_cancel( self.afterId )
             self.afterId = None
-
             self.pressed_function()
         else:
             if self.pressed_counter > 1:
                 self.pressed_function()
             else:
-                # Comment out the following line for only one event on key press:
-                self.release_function()
-                pass
+                if self.repeat_press:
+                    # When this is true, pressed function will be called and release function will be called both
+                    self.release_function()
+                else:
+                    if self.no_repeat_function != None:
+                        # If a special function is provided, run it instead
+                        self.no_repeat_function()
             
             self.pressed_counter += 1
 
