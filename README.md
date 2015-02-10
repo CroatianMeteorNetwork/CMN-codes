@@ -13,6 +13,10 @@ CMN-codes
 
   Enable any key to have unique events on being pressed once or being held down longer for Tkinter.
 
+  * ## scalarsNvectors4numpy
+
+  Decorator which enables to call 2 different functions depending on the argument type: First function will be called if the argument is an array-like object, the second one will be called if the argument is a scalar.
+
   * ## HMM_radio2txt
   
   Converting WAV files to *.txt format
