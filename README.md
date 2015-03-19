@@ -15,7 +15,7 @@ CMN-codes
 
   * ## scalarsNvectors4numpy
 
-  Decorator which enables to call 2 different functions depending on the argument type: First function will be called if the argument is an array-like object, the second one will be called if the argument is a scalar.
+  Decorator which enables to pass any python array-like object or scalar to any numpy function.
 
   * ## HMM_radio2txt
   

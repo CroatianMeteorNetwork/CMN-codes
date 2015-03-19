@@ -57,7 +57,7 @@ def universalDecorator(func):
 
 @universalDecorator
 def sinList(x):
-    """ Take sine of a list and cut the list valies that are below 0.
+    """ Take sine of all list elements and cut the list values that are below 0.
     """
     res = np.sin(x)
     res[res<0] = 0
