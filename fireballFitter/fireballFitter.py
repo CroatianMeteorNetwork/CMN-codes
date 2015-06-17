@@ -200,10 +200,11 @@ def funcsIntersect(x, ycoeffs, y_extended):
     return intersections[-1]
 
 
-def fitData(t_data, y_data, sigma_data, velocity=False):
+def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None):
     """ Fits the given data to the provided funtiones defined (func and funcExtend). 
 
     velocity: If False it returns the fit in the spatial space, if True it returns the fitted velocity
+    int_point: precalculated intersection point, default None
     """
 
     ## Fit y_data
@@ -221,7 +222,8 @@ def fitData(t_data, y_data, sigma_data, velocity=False):
 
         # Find intersection points of the 4 parameter and 6 parameter curve
         print 'Best intersection point between the 4 and 6 parameter curve:'
-        int_point = funcsIntersect(t_data, ycoeffs, y_extended)
+        if not int_point:
+            int_point = funcsIntersect(t_data, ycoeffs, y_extended)
 
         intersection = [int_point, func(int_point, *ycoeffs)]
         print intersection
@@ -309,7 +311,7 @@ plt.grid()
 
 ## Fit h_data
 
-h_coeffs, intersection, h_fit_points, t_points = fitData(t_data, h_data, sigma_data)
+h_coeffs, intersection, h_fit_points, t_points = fitData(t_data, h_data, sigma_data, int_point = intersection[0])
 
 print 'Curve coefficients for h:', h_coeffs
 
@@ -334,7 +336,7 @@ plt.grid()
 
 # Calculate velocity from the fitted curve
 #v_data = funcDerive(t_data, *s_coeffs)
-s_coeffs, intersection, v_data, t_points = fitData(t_data, s_data, sigma_data, velocity = True)
+s_coeffs, intersection, v_data, t_points = fitData(t_data, s_data, sigma_data, velocity = True, int_point = intersection[0])
 # Plot fitted function points (red)
 velocity_data = plt.scatter(t_points, v_data, s = 3, c = 'g', edgecolors='none')
 plt.ylabel('Velocity (km/s)')
@@ -350,9 +352,9 @@ plt.legend((velocity_data, ),
 plt.xlabel('Time (s)')
 
 # Export fitted data to a file
-exportDataMaria(t_data, h_fit_points, v_data)
+exportDataMaria(t_points, h_fit_points, v_data)
 
 # Export raw height to a file
-exportDataMaria(t_data, h_data, v_data, file_name = "Alex_raw.txt")
+exportDataMaria(t_points, h_data, v_data, file_name = "Alex_raw.txt")
 
 plt.show()
