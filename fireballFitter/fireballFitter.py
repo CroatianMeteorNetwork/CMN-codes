@@ -109,10 +109,13 @@ def loadData(file_name):
     return t_data, s_data, h_data, sigma_data
 
 
-def saveCoeffs(coeff_list, file_name = 'exp_par.txt'):
+def saveCoeffs(coeff_list, file_name = 'exp_par.txt', tx = None):
     """ Saves coefficients to a file. """
 
     save_file = open(file_name, 'w')
+
+    if tx:
+        save_file.write('tx = ' + str(tx) + '\n')
 
     for i, coeff in enumerate(coeff_list):
         save_file.write('a' + str(i + 1) + ' = '+ str(coeff) + '\n')
@@ -200,11 +203,12 @@ def funcsIntersect(x, ycoeffs, y_extended):
     return intersections[-1]
 
 
-def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None):
+def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None, coeff_name='x'):
     """ Fits the given data to the provided funtiones defined (func and funcExtend). 
 
     velocity: If False it returns the fit in the spatial space, if True it returns the fitted velocity
     int_point: precalculated intersection point, default None
+    coef_name: name of the coeficient to be calculated (used for file saving)
     """
 
     ## Fit y_data
@@ -250,6 +254,10 @@ def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None):
             # Calculate path
             fitted_data = np.concatenate( (func(t1_data, *ycoeffs), funcExtend(t2_data, *y_extended)) )
 
+            # Save parameter files
+            saveCoeffs(ycoeffs, coeff_name + '_4param_coeffs.txt')
+            saveCoeffs(y_extended, coeff_name + '_6param_coeffs.txt', tx = int_point)
+
         t_data = np.concatenate( (t1_data, t2_data) )
 
 
@@ -259,7 +267,10 @@ def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None):
             #fitted_data = funcExtendDerive(t_data, *y_extended)
         else:
             fitted_data = func(t_data, *ycoeffs)
-        intersection = None
+            saveCoeffs(ycoeffs, coeff_name + '_4param_coeffs.txt')
+
+        intersection = [None, None]
+        
 
     # Test plot
     #test_data = func2ndDerive(t_data, *ycoeffs) - funcExtend2ndDerive(t_data, *y_extended)
@@ -272,12 +283,12 @@ def fitData(t_data, y_data, sigma_data, velocity=False, int_point=None):
 # Load data from a file
 t_data, s_data, h_data, sigma_data = loadData(data_file)
 
-s_coeffs, intersection, s_fit_points, t_points = fitData(t_data, s_data, sigma_data)
+s_coeffs, intersection, s_fit_points, t_points = fitData(t_data, s_data, sigma_data, coeff_name = 's')
 
 print 'Curve coefficients for s:', s_coeffs
 
 # Save coefficients to a file
-saveCoeffs(s_coeffs, 's_coeffs.txt')
+#saveCoeffs(s_coeffs, 's_coeffs.txt')
 
 # Plot data
 
@@ -311,12 +322,12 @@ plt.grid()
 
 ## Fit h_data
 
-h_coeffs, intersection, h_fit_points, t_points = fitData(t_data, h_data, sigma_data, int_point = intersection[0])
+h_coeffs, intersection, h_fit_points, t_points = fitData(t_data, h_data, sigma_data, int_point = intersection[0], coeff_name = 'h')
 
 print 'Curve coefficients for h:', h_coeffs
 
 # Save coefficients to a file
-saveCoeffs(h_coeffs, 'h_coeffs.txt')
+#saveCoeffs(h_coeffs, 'h_coeffs.txt')
 
 # Plot input data points (blue)
 real_data = plt.scatter(t_data, h_data, s = 3, c = 'b', edgecolors='none')
