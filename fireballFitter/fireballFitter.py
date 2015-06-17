@@ -166,7 +166,7 @@ def inflectionFinder(func2ndDerive, args1, funcExtend2ndDerive, args2, max_value
 
     # Look for sign change in the function's second derivative
     for i in domain:
-        #print func2ndDerive(i, *args1) - funcExtend2ndDerive(i, *args2)
+        
         if np.sign(func2ndDerive(i, *args1) - funcExtend2ndDerive(i, *args2)) != np.sign(func2ndDerive(i + step, *args1) - funcExtend2ndDerive(i + step, *args2)):
             # Return the mean value of the two points between which the change in the derivative sign has been detected
             return (2*i + step) / 2
