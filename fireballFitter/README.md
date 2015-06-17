@@ -9,21 +9,15 @@ Input file format (input.txt):
 Station Time Flight_path Height Optional_uncertanty
 
 e.g.
-
+```
 VIB 004.000 066.384 28.820  185.27182
-
 VIB 004.020 066.555 28.662  185.27182
-
 VIB 004.040 066.728 28.502  185.27182
-
 APO 000.181 003.283 86.549   64.24059
-
 APO 000.341 006.137 83.936   64.24059
-
 APO 000.381 006.906 83.229   64.24059
-
 ...
-
+```
 
 The software has an option to aproximate the flight path with a 6-parameter exponential curve: 
 
