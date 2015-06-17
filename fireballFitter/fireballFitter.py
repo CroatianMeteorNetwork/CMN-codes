@@ -17,7 +17,8 @@
 # INPUT FILE NAME
 data_file = 'input.txt'
 
-# Use the 6 parameter fit for better ending approximation
+# True = Use the 6-parameter fit for better ending approximation
+# False = Use the 4-parameter fit for the whole flight path
 extended_ending = True
 
 
