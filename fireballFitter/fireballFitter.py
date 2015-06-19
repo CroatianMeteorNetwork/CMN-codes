@@ -26,6 +26,16 @@ time_domain_sample = True
 # Sample step (seconds)
 time_sample_step = 0.2
 
+# Absolute sigma
+# From scipy docs:
+# If False, sigma denotes relative weights of the data points. The returned covariance matrix pcov is based 
+#    on estimated errors in the data, and is not affected by the overall magnitude of the values in sigma. 
+#    Only the relative magnitudes of the sigma values matter.
+# If True, sigma describes one standard deviation errors of the input data points. The estimated covariance 
+#    in pcov is based on these values.
+absolute_sigma = False
+
+
 
 from scipy.optimize import curve_fit, fsolve
 import matplotlib.pyplot as plt
@@ -221,13 +231,13 @@ def fitData(t_data, y_data, sigma_data, sampled=True, step=0.2, velocity=False, 
     ## Fit y_data
 
     # First fit with 7 parameters
-    y_extended, pcov = curve_fit(funcExtend, xdata = t_data, ydata = y_data, sigma = sigma_data, p0=(1, 1, 1, 1, 1, 1))
+    y_extended, pcov = curve_fit(funcExtend, xdata = t_data, ydata = y_data, sigma = sigma_data, absolute_sigma = absolute_sigma, p0=(1, 1, 1, 1, 1, 1))
 
     # Take the parameters for a better guess with 4 coeff. fit
     y_p0 = y_extended[:4]
 
     # x_coeffs contains curve coeficients, p0 is the inital guess for the coeficients
-    ycoeffs, pcov = curve_fit(func, xdata = t_data, ydata = y_data, sigma = sigma_data, p0=y_p0)
+    ycoeffs, pcov = curve_fit(func, xdata = t_data, ydata = y_data, sigma = sigma_data, absolute_sigma = absolute_sigma, p0=y_p0)
 
     if sampled:
         t_temp = np.arange(0, max(t_data), step)
