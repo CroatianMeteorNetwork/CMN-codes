@@ -230,9 +230,9 @@ def fitData(t_data, y_data, sigma_data, sampled=True, step=0.2, velocity=False, 
     ycoeffs, pcov = curve_fit(func, xdata = t_data, ydata = y_data, sigma = sigma_data, p0=y_p0)
 
     if sampled:
-        t_data = np.arange(0, max(t_data), step)
+        t_temp = np.arange(0, max(t_data), step)
         max_value = np.array([max(t_data)])
-        t_data = np.concatenate((t_data, max_value))
+        t_data = np.concatenate((t_temp, max_value))
 
     if extended_ending:
 
