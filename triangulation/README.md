@@ -8,9 +8,9 @@ See function 'triangulate' for details about the usage. Also, an example of usag
 Input parameters:
 - Time of observation (year, month, day, hour, minute, second)
 - Station A position (longitude, latitude, elevation)
-- Station A line fo sight (procession corrected RA and Dec, epoch 2000.0)
+- Station A line of sight (J2000.0 epoch)
 - Station B position (longitude, latitude, elevation)
-- Station B line fo sight (procession corrected RA and Dec, epoch 2000.0)
+- Station B line of sight (J2000.0 epoch)
 
 Output:
 - Position (longitude, latitude, elevation) of the triangulated point

@@ -63,7 +63,7 @@ def floatArguments(func):
 
 
 def date2JD(year, month, day, hour, minute, second):
-    """ Convert date and time to Julian Date with epoch 2000.0. 
+    """ Convert date and time to Julian Date with epoch J2000.0. 
 
     @param year: [int] year
     @param month: [int] month
@@ -88,7 +88,7 @@ def date2JD(year, month, day, hour, minute, second):
 def JD2LST(julian_date, lon):
     """ Convert Julian date to Local Sidreal Time and Greenwich Sidreal Time. 
 
-    @param julian_date: [float] decimal julian date, epoch 2000.0
+    @param julian_date: [float] decimal julian date, epoch J2000.0
     @param lon: [float] longitude of the observer in degrees
 
     @return (LST, GST): [tuple of floats] a tuple of Local Sidreal Time and Greenwich Sidreal Time
@@ -113,7 +113,7 @@ def geo2Cartesian(lon, lat, h, julian_date):
     @param lon: [float] longitde of the observer in degress
     @param lat: [float] latitude of the observer in degrees
     @param h: [int or float] elevation of the observer in meters
-    @param julian_date: [float] decimal julian date, epoch 2000.0
+    @param julian_date: [float] decimal julian date, epoch J2000.0
 
     @return (x, y, z): [tuple of floats] a tuple of X, Y, Z Cartesian coordinates
     """
@@ -219,7 +219,7 @@ def findClosestPoints(Px, Py, Pz, Qx, Qy, Qz, ux, uy, uz, vx, vy, vz):
 def cartesian2Geographical(julian_date, lon, Xi, Yi, Zi):
     """ Convert Cartesian coordinates of a point (origin in Earth's centre) to geographical coordinates. 
 
-    @param julian_date: [float] decimal julian date, epoch 2000.0
+    @param julian_date: [float] decimal julian date, epoch J2000.0
     @param lon: [float] longitde of the observer in degress
     @param Xi: [float] X coordinate of a point in space (meters)
     @param Yi: [float] Y coordinate of a point in space (meters)
@@ -240,11 +240,11 @@ def cartesian2Geographical(julian_date, lon, Xi, Yi, Zi):
     return lon_p, lat_p
 
 
-def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec2):
+def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec2, epoch_correction=True):
     """ Triangulate a meteor detection point between 2 stations given the station's position and stellar 
         coordinates of the detections.
 
-    @param julian_date: [float] decimal julian date, epoch 2000.0
+    @param julian_date: [float] decimal julian date, epoch J2000.0
     @param lon1: [float] longitde of the 1st observer in degress
     @param lat1: [float] latitude of the 1st observer in degrees
     @param h1: [int or float] elevation of the 1st observer in meters
@@ -255,6 +255,7 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
     @param h2: [int or float] elevation of the 2nd observer in meters
     @param ra2: [float] right ascension of the line of sight from the 2nd observer in degrees
     @param dec2: [float] declination of the line of sight from the 2nd observer in degrees
+    @param epoch_correction: [bool] correct RA and Dec for precession from epoch J2000.0 to the current epoch
 
     @return (lon_avg, lat_avg, elevation, est_error): [tuple of floats]
         lon_avg: longitude of the midpoint between the 2 estimated points on the lines of sight (degress)
@@ -264,6 +265,12 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
     
 
     """
+
+    # Presess RA and Dec to J2000.0 epoch
+    if epoch_correction:
+        ra1, dec1 = equatorialCoordPrecession(date2JD(2000, 1, 1, 12, 0, 0), julian_date, ra1, dec1)
+        ra2, dec2 = equatorialCoordPrecession(date2JD(2000, 1, 1, 12, 0, 0), julian_date, ra2, dec2)
+
 
     # Convert geographical position to Cartesian coordinates for both stations
     X1, Y1, Z1 = geo2Cartesian(lon1, lat1, h1, julian_date)
@@ -296,6 +303,55 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
 
 
     return lon_avg, lat_avg, elevation, est_error
+
+
+
+def equatorialCoordPrecession(start_epoch, final_epoch, ra, dec):
+    """ Corrects Right Ascension and Declination from one epoch to another, taking only precession into 
+        account.
+
+        Implemented from: Jean Meeus - Astronomical Algorithms, 2nd edition, pages 134-135
+
+    @param start_epoch: [float] Julian date of the starting epoch
+    @param final_epoch: [float] Julian date of the final epoch
+    @param ra: [float] non-corrected right ascension in degrees
+    @param dec: [float] non-corrected declination in degrees
+
+    @return (ra, dec): [tuple of floats] precessed equatorial coordinates in degrees
+
+    """
+
+    ra = math.radians(ra)
+    dec = math.radians(dec)
+
+    T = (start_epoch - 2451545) / 36525.0
+    t = (final_epoch - start_epoch) / 36525.0
+
+    # Calculate correction parameters
+    zeta  = ((2306.2181 + 1.39656*T - 0.000139*T**2)*t + (0.30188 - 0.000344*T)*t**2 + 0.017998*t**3)/3600
+    z     = ((2306.2181 + 1.39656*T - 0.000139*T**2)*t + (1.09468 + 0.000066*T)*t**2 + 0.018203*t**3)/3600
+    theta = ((2004.3109 - 0.85330*T - 0.000217*T**2)*t - (0.42665 + 0.000217*T)*t**2 - 0.041833*t**3)/3600
+
+    # Convert parameters to radians
+    zeta, z, theta = map(math.radians, (zeta, z, theta))
+
+    # Calculate the next set of parameters
+    A = math.cos(dec) * math.sin(ra + zeta)
+    B = math.cos(theta)*math.cos(dec)*math.cos(ra + zeta) - math.sin(theta)*math.sin(dec)
+    C = math.sin(theta)*math.cos(dec)*math.cos(ra + zeta) + math.cos(theta)*math.sin(dec)
+
+    # Calculate right ascension
+    ra_corr = math.atan2(A, B) + z
+
+    # Calculate declination (apply a different equation if close to the pole, closer then 0.5 degrees)
+    if (math.pi/2 - abs(dec)) < math.radians(0.5):
+        dec_corr = math.acos(math.sqrt(A**2 + B**2))
+    else:
+        dec_corr = math.asin(C)
+
+
+    return math.degrees(ra_corr), math.degrees(dec_corr)
+
     
 
 
@@ -310,16 +366,16 @@ if __name__ == '__main__':
     lat1 = 45.682317 # deg
     h1 = 91 # m
 
-    ra1 = 71.6 # deg
-    dec1 = 23.1 # deg
+    ra1 = 70.593 # deg
+    dec1 = 22.939 # deg
 
     # Station 2
     lon2 = 15.964008 # deg
     lat2 = 45.807056 # deg
     h2 = 117 # m
 
-    ra2 = 171.6 # deg
-    dec2 = 39 # deg
+    ra2 = 170.327 # deg
+    dec2 = 38.799 # deg
 
     ######################
 
