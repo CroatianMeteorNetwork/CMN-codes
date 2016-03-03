@@ -1,5 +1,5 @@
 """
-A module for triangulating a point in the meteor track.
+A module for triangulating a point on the meteor track.
 
 See the function "triangulate" for more details.
 
@@ -31,127 +31,15 @@ See the function "triangulate" for more details.
 import math
 from datetime import datetime, timedelta
 
+from meteor_tools import EARTH_CONSTANTS, floatArguments, date2JD, equatorialCoordPrecession, geo2Cartesian, stellar2Vector, cartesian2Geographical
+
+
 ### CONSTANTS ###
 
-# Define Julian epoch
-JULIAN_EPOCH = datetime(2000, 1, 1, 12) # noon (the epoch name is unrelated)
-J2000_JD = timedelta(2451545) # julian epoch in julian dates
-
-# Earth elipsoid parameters in meters (source: IERS 2003)
-EARTH_EQUATORIAL_RADIUS = 6378136.6
-EARTH_POLAR_RADIUS = 6356751.9
-EARTH_RATIO = EARTH_EQUATORIAL_RADIUS/EARTH_POLAR_RADIUS
-EARTH_SQR_DIFF = EARTH_EQUATORIAL_RADIUS**2 - EARTH_POLAR_RADIUS**2
+# Initialize Earth shape constants object
+EARTH = EARTH_CONSTANTS()
 
 #################
-
-
-
-def floatArguments(func):
-    """ A decorator that converts all function arguments to float. 
-    
-    @param func: a function to be decorated
-
-    @return :[funtion object] the decorated function
-    """
-
-    def inner_func(*args):
-        args = map(float, args)
-        return func(*args)
-
-    return inner_func
-
-
-def date2JD(year, month, day, hour, minute, second):
-    """ Convert date and time to Julian Date with epoch J2000.0. 
-
-    @param year: [int] year
-    @param month: [int] month
-    @param day: [int] day of the date
-    @param hour: [int] hours
-    @param minute: [int] minutes
-    @param second: [int] seconds
-
-    @return :[float] julian date, epoch 2000.0
-    """
-
-    # Create datetime object of current time
-    dt = datetime(year, month, day, hour, minute, second)
-
-    # Calculate Julian date
-    julian = (dt - JULIAN_EPOCH + J2000_JD)
-    
-    # Convert seconds to day fractions
-    return julian.days + julian.seconds/86400.0
-
-
-def JD2LST(julian_date, lon):
-    """ Convert Julian date to Local Sidreal Time and Greenwich Sidreal Time. 
-
-    @param julian_date: [float] decimal julian date, epoch J2000.0
-    @param lon: [float] longitude of the observer in degrees
-
-    @return (LST, GST): [tuple of floats] a tuple of Local Sidreal Time and Greenwich Sidreal Time
-    """
-
-    t = (julian_date - J2000_JD.days)/36525
-
-    # Greenwich Sidreal Time
-    GST = 280.46061837 + 360.98564736629 * (julian_date - 2451545) + 0.000387933 *t**2 - ((t**3) / 38710000)
-    GST = (GST+360) % 360
-
-    # Local Sidreal Time
-    LST = (GST + lon + 360) % 360
-    
-    return LST, GST
-
-@floatArguments
-def geo2Cartesian(lon, lat, h, julian_date):
-    """ Convert geographical Earth coordinates to Cartesian coordinate system (Earth center as origin).
-        The Earth is considered as an elipsoid.
-
-    @param lon: [float] longitde of the observer in degress
-    @param lat: [float] latitude of the observer in degrees
-    @param h: [int or float] elevation of the observer in meters
-    @param julian_date: [float] decimal julian date, epoch J2000.0
-
-    @return (x, y, z): [tuple of floats] a tuple of X, Y, Z Cartesian coordinates
-    """
-
-    lon_rad = math.radians(lon)
-    lat_rad = math.radians(lat)
-
-    # Get Local Sidreal Time
-    LST_rad = math.radians(JD2LST(julian_date, lon)[0])
-
-    # Get distance from Earth centre to the position given by geographical coordinates
-    Rh = h + math.sqrt(EARTH_POLAR_RADIUS**2 + (EARTH_SQR_DIFF/((EARTH_RATIO * math.tan(lat_rad)) * (EARTH_RATIO * math.tan(lat_rad)) + 1)))
-
-    # Calculate Cartesian coordinates (in meters)
-    x = Rh * math.cos(lat_rad) * math.cos(LST_rad)
-    y = Rh * math.cos(lat_rad) * math.sin(LST_rad)
-    z = Rh * math.sin(lat_rad)
-
-    return x, y, z
-
-
-def stellar2Vector(ra, dec):
-    """ Convert stellar equatorial coordinates to a vector with X, Y and Z components. 
-
-    @param ra: [float] right ascension in degrees
-    @param dec: [float] declination in degrees
-
-    @return (x, y, z): [tuple of floats]
-    """
-    
-    ra_rad = math.radians(ra)
-    dec_rad = math.radians(dec)
-
-    xt = math.cos(dec_rad) * math.cos(ra_rad)
-    yt = math.cos(dec_rad) * math.sin(ra_rad)
-    zt = math.sin(dec_rad)
-
-    return xt, yt, zt
 
 
 @floatArguments
@@ -216,42 +104,18 @@ def findClosestPoints(Px, Py, Pz, Qx, Qy, Qz, ux, uy, uz, vx, vy, vz):
     return Sx, Sy, Sz, Tx, Ty, Tz, d
 
 
-def cartesian2Geographical(julian_date, lon, Xi, Yi, Zi):
-    """ Convert Cartesian coordinates of a point (origin in Earth's centre) to geographical coordinates. 
-
-    @param julian_date: [float] decimal julian date, epoch J2000.0
-    @param lon: [float] longitde of the observer in degress
-    @param Xi: [float] X coordinate of a point in space (meters)
-    @param Yi: [float] Y coordinate of a point in space (meters)
-    @param Zi: [float] Z coordinate of a point in space (meters)
-
-    @return (lon_p, lat_p): [tuple of floats]
-        lon_p: longitude of the point in degrees
-        lat_p: latitude of the point in degrees
-    """
-
-    # Get LST and GST
-    LST, GST = JD2LST(julian_date, lon)
-
-    # Convert Cartesian coordinates to latitude and longitude
-    lon_p = math.degrees(math.atan2(Yi, Xi) - math.radians(GST))
-    lat_p = math.degrees(math.atan2(math.sqrt(Xi**2 + Yi**2), Zi))
-
-    return lon_p, lat_p
-
-
-def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec2, epoch_correction=True):
+def triangulate(julian_date, lat1, lon1, h1, ra1, dec1, lat2, lon2, h2, ra2, dec2, epoch_correction=True):
     """ Triangulate a meteor detection point between 2 stations given the station's position and stellar 
         coordinates of the detections.
 
     @param julian_date: [float] decimal julian date, epoch J2000.0
-    @param lon1: [float] longitde of the 1st observer in degress
     @param lat1: [float] latitude of the 1st observer in degrees
+    @param lon1: [float] longitde of the 1st observer in degress
     @param h1: [int or float] elevation of the 1st observer in meters
     @param ra1: [float] right ascension of the line of sight from the 1st observer in degrees
     @param dec1: [float] declination of the line of sight from the 1st observer in degrees
-    @param lon2: [float] longitde of the 2nd observer in degress
     @param lat2: [float] latitude of the 2nd observer in degrees
+    @param lon2: [float] longitde of the 2nd observer in degress
     @param h2: [int or float] elevation of the 2nd observer in meters
     @param ra2: [float] right ascension of the line of sight from the 2nd observer in degrees
     @param dec2: [float] declination of the line of sight from the 2nd observer in degrees
@@ -273,8 +137,8 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
 
 
     # Convert geographical position to Cartesian coordinates for both stations
-    X1, Y1, Z1 = geo2Cartesian(lon1, lat1, h1, julian_date)
-    X2, Y2, Z2 = geo2Cartesian(lon2, lat2, h2, julian_date)
+    X1, Y1, Z1 = geo2Cartesian(lat1, lon1, h1, julian_date)
+    X2, Y2, Z2 = geo2Cartesian(lat2, lon2, h2, julian_date)
 
     # Convert right ascension and declination to a vector in Cartesian space
     xt1, yt1, zt1 = stellar2Vector(ra1, dec1)
@@ -290,7 +154,7 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
     lon_avg, lat_avg = cartesian2Geographical(julian_date, lon1, Xi_avg, Yi_avg, Zi_avg)
 
     # Get height of point from Earth centre
-    R_point = math.sqrt(EARTH_POLAR_RADIUS**2 + (EARTH_SQR_DIFF/((EARTH_RATIO * math.tan(math.radians(lat_avg))) * (EARTH_RATIO * math.tan(math.radians(lat_avg))) + 1)))
+    R_point = math.sqrt(EARTH.POLAR_RADIUS**2 + (EARTH.SQR_DIFF/((EARTH.RATIO * math.tan(math.radians(lat_avg))) * (EARTH.RATIO * math.tan(math.radians(lat_avg))) + 1)))
 
     # Get points' sea level elevation
     elevation = math.sqrt(Xi_avg**2 + Yi_avg**2 + Zi_avg**2) - R_point
@@ -304,55 +168,6 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
 
     return lon_avg, lat_avg, elevation, est_error
 
-
-
-def equatorialCoordPrecession(start_epoch, final_epoch, ra, dec):
-    """ Corrects Right Ascension and Declination from one epoch to another, taking only precession into 
-        account.
-
-        Implemented from: Jean Meeus - Astronomical Algorithms, 2nd edition, pages 134-135
-
-    @param start_epoch: [float] Julian date of the starting epoch
-    @param final_epoch: [float] Julian date of the final epoch
-    @param ra: [float] non-corrected right ascension in degrees
-    @param dec: [float] non-corrected declination in degrees
-
-    @return (ra, dec): [tuple of floats] precessed equatorial coordinates in degrees
-
-    """
-
-    ra = math.radians(ra)
-    dec = math.radians(dec)
-
-    T = (start_epoch - 2451545) / 36525.0
-    t = (final_epoch - start_epoch) / 36525.0
-
-    # Calculate correction parameters
-    zeta  = ((2306.2181 + 1.39656*T - 0.000139*T**2)*t + (0.30188 - 0.000344*T)*t**2 + 0.017998*t**3)/3600
-    z     = ((2306.2181 + 1.39656*T - 0.000139*T**2)*t + (1.09468 + 0.000066*T)*t**2 + 0.018203*t**3)/3600
-    theta = ((2004.3109 - 0.85330*T - 0.000217*T**2)*t - (0.42665 + 0.000217*T)*t**2 - 0.041833*t**3)/3600
-
-    # Convert parameters to radians
-    zeta, z, theta = map(math.radians, (zeta, z, theta))
-
-    # Calculate the next set of parameters
-    A = math.cos(dec) * math.sin(ra + zeta)
-    B = math.cos(theta)*math.cos(dec)*math.cos(ra + zeta) - math.sin(theta)*math.sin(dec)
-    C = math.sin(theta)*math.cos(dec)*math.cos(ra + zeta) + math.cos(theta)*math.sin(dec)
-
-    # Calculate right ascension
-    ra_corr = math.atan2(A, B) + z
-
-    # Calculate declination (apply a different equation if close to the pole, closer then 0.5 degrees)
-    if (math.pi/2 - abs(dec)) < math.radians(0.5):
-        dec_corr = math.acos(math.sqrt(A**2 + B**2))
-    else:
-        dec_corr = math.asin(C)
-
-
-    return math.degrees(ra_corr), math.degrees(dec_corr)
-
-    
 
 
 if __name__ == '__main__':
@@ -380,7 +195,7 @@ if __name__ == '__main__':
     ######################
 
     # Triangulate!
-    point_params = triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec2)
+    point_params = triangulate(julian_date, lat1, lon1, h1, ra1, dec1, lat2, lon2, h2, ra2, dec2)
 
     # Print results
     print 'Longitude: ', point_params[0], ' deg'
