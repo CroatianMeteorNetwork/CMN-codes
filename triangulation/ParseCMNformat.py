@@ -25,7 +25,7 @@
 
 import numpy as np
 
-from meteor_triangulation import date2JD
+from MeteorTriangulation import date2JD
 
 class stationData(object):
     """ Holds information about one meteor station (location) and observed points. """

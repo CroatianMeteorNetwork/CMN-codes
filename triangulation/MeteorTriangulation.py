@@ -31,7 +31,8 @@ See the function "triangulate" for more details.
 import math
 from datetime import datetime, timedelta
 
-from meteor_tools import EARTH_CONSTANTS, floatArguments, date2JD, equatorialCoordPrecession, geo2Cartesian, stellar2Vector, cartesian2Geographical
+from MeteorTools import (EARTH_CONSTANTS, floatArguments, date2JD, equatorialCoordPrecession, geo2Cartesian, 
+    stellar2Vector, cartesian2Geographical)
 
 
 ### CONSTANTS ###
@@ -154,13 +155,15 @@ def triangulate(julian_date, lat1, lon1, h1, ra1, dec1, lat2, lon2, h2, ra2, dec
     lon_avg, lat_avg = cartesian2Geographical(julian_date, lon1, Xi_avg, Yi_avg, Zi_avg)
 
     # Get height of point from Earth centre
-    R_point = math.sqrt(EARTH.POLAR_RADIUS**2 + (EARTH.SQR_DIFF/((EARTH.RATIO * math.tan(math.radians(lat_avg))) * (EARTH.RATIO * math.tan(math.radians(lat_avg))) + 1)))
+    R_point = math.sqrt(EARTH.POLAR_RADIUS**2 + (EARTH.SQR_DIFF/((EARTH.RATIO * 
+        math.tan(math.radians(lat_avg))) * (EARTH.RATIO * math.tan(math.radians(lat_avg))) + 1)))
 
     # Get points' sea level elevation
     elevation = math.sqrt(Xi_avg**2 + Yi_avg**2 + Zi_avg**2) - R_point
 
     # Angle of intersection of two vectors (radians)
-    angle = math.acos((xt1*xt2 + yt1*yt2 + zt1*zt2) / ((xt1**2 + yt1**2 + zt1**2) * (xt2**2 + yt2**2 + zt2**2)))
+    angle = math.acos((xt1*xt2 + yt1*yt2 + zt1*zt2) / ((xt1**2 + yt1**2 + zt1**2) * (xt2**2 + yt2**2 + 
+        zt2**2)))
 
     # Estimated error
     est_error = d / 2 / math.sin(angle)

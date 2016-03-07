@@ -152,7 +152,8 @@ def geo2Cartesian(lat, lon, h, julian_date):
     LST_rad = math.radians(JD2LST(julian_date, lon)[0])
 
     # Get distance from Earth centre to the position given by geographical coordinates
-    Rh = h + math.sqrt(EARTH.POLAR_RADIUS**2 + (EARTH.SQR_DIFF/((EARTH.RATIO * math.tan(lat_rad)) * (EARTH.RATIO * math.tan(lat_rad)) + 1)))
+    Rh = h + math.sqrt(EARTH.POLAR_RADIUS**2 + (EARTH.SQR_DIFF/((EARTH.RATIO * math.tan(lat_rad)) * 
+        (EARTH.RATIO * math.tan(lat_rad)) + 1)))
 
     # Calculate Cartesian coordinates (in meters)
     x = Rh * math.cos(lat_rad) * math.cos(LST_rad)
