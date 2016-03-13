@@ -71,12 +71,12 @@ def parseInf(file_name):
     return station_data_obj
 
 
-def parsePlatepar(file_name):
-    """ Load calibration parameters from a platepar file. 
+class parsePlatepar(object):
+    """ Load calibration parameters from a platepar file.
 
     """
 
-    def parse(f):
+    def parse(self, f):
         """ Read next line, split the line and convert parameters to float.
 
         @param f: [file handle] file we want to read
@@ -87,66 +87,59 @@ def parsePlatepar(file_name):
         return map(float, f.readline().split())
 
 
-    with open(file_name) as f:
+    def __init__(self, file_name):
+        """ Read platepar and return object to access the data externally. 
 
-        # Parse latitude, longitude, elevation
-        lat, lon, elev = parse(f)
+        @param file_name: [string] path to the platepar file
 
-        # Parse date and time as int
-        D, M, Y, h, m, s = map(int, f.readline().split())
+        @return self: [object] instance of this class with loaded platepar parameters
+        """
 
-        # Convert time to JD
-        JD = date2JD(Y, M, D, h, m, s)
+        with open(file_name) as f:
 
-        # Calculate the referent hour angle
-        T=(JD - 2451545.0)/36525.0
-        Ho = (280.46061837 + 360.98564736629*(JD - 2451545.0) + 0.000387933*T**2 - T**3/38710000.0) % 360
+            # Parse latitude, longitude, elevation
+            self.lat, self.lon, self.elev = self.parse(f)
 
-        # Parse camera parameters
-        X_res, Y_res, focal_length = parse(f)
+            # Parse date and time as int
+            D, M, Y, h, m, s = map(int, f.readline().split())
 
-        # Parse the right ascension of the image centre
-        RA_d, RA_H, RA_M, RA_S = parse(f)
+            # Convert time to JD
+            self.JD = date2JD(Y, M, D, h, m, s)
 
-        # Parse the declination of the image centre
-        dec_d, dec_D, dec_M, dec_S = parse(f)
+            # Calculate the referent hour angle
+            T=(self.JD - 2451545.0)/36525.0
+            self.Ho = (280.46061837 + 360.98564736629*(self.JD - 2451545.0) + 0.000387933*T**2 - 
+                T**3/38710000.0) % 360
 
-        # Parse the rotation parameter
-        rot_param = parse(f)[0]
+            # Parse camera parameters
+            self.X_res, self.Y_res, self.focal_length = self.parse(f)
 
-        # Parse the sum of image scales per each image axis (arcsec per px)
-        F_scale = parse(f)[0]
-        w_pix = 50*F_scale/3600
-        F_scale = 3600/F_scale
+            # Parse the right ascension of the image centre
+            self.RA_d, self.RA_H, self.RA_M, self.RA_S = self.parse(f)
 
-        # Load magnitude slope parameters
-        mag_0, mag_lev = parse(f)
+            # Parse the declination of the image centre
+            self.dec_d, self.dec_D, self.dec_M, self.dec_S = self.parse(f)
 
-        # Load X axis polynomial parameters
-        x_poly = np.zeros(shape=(12,), dtype=np.float64)
-        for i in range(12):
-            x_poly[i] = parse(f)[0]
+            # Parse the rotation parameter
+            self.rot_param = self.parse(f)[0]
 
-        # Load Y axis polynomial parameters
-        y_poly = np.zeros(shape=(12,), dtype=np.float64)
-        for i in range(12):
-            y_poly[i] = parse(f)[0]
+            # Parse the sum of image scales per each image axis (arcsec per px)
+            self.F_scale = self.parse(f)[0]
+            self.w_pix = 50*self.F_scale/3600
+            self.F_scale = 3600/self.F_scale
 
-        # Read station code
-        station_code = f.readline().replace('\r', '').replace('\n', '')
+            # Load magnitude slope parameters
+            self.mag_0, self.mag_lev = self.parse(f)
 
+            # Load X axis polynomial parameters
+            self.x_poly = np.zeros(shape=(12,), dtype=np.float64)
+            for i in range(12):
+                self.x_poly[i] = self.parse(f)[0]
 
-    return (lat, lon, elev, JD, Ho, X_res, Y_res, RA_d, dec_d, rot_param, F_scale, w_pix, mag_0, mag_lev, 
-        x_poly, y_poly, station_code)
+            # Load Y axis polynomial parameters
+            self.y_poly = np.zeros(shape=(12,), dtype=np.float64)
+            for i in range(12):
+                self.y_poly[i] = self.parse(f)[0]
 
-    # print lat, lon, elev
-    # print D, M, Y, h, m, s, JD, Ho
-    # print X_res, Y_res, focal_length
-    # print RA_d, RA_H, RA_M, RA_S
-    # print dec_d, dec_D, dec_M, dec_S
-    # print rot_param
-    # print F_scale, w_pix
-    # print mag_0, mag_lev
-    # print x_poly
-    # print y_poly
-    # print station_code
+            # Read station code
+            self.station_code = f.readline().replace('\r', '').replace('\n', '')

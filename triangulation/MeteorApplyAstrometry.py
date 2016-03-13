@@ -24,14 +24,10 @@
 # THE SOFTWARE.
 
 
-import sys
 import math
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
 
-from MeteorTriangulation import date2JD, triangulate
-from ParseCMNformat import parseInf, parsePlatepar
+from MeteorTriangulation import date2JD
 
 
 
@@ -58,8 +54,8 @@ def applyFieldCorrection(x_poly, y_poly, X_res, Y_res, F_scale, X_data, Y_data, 
     Y_scale = Y_res/288.0
 
     # Initialize final values containers
-    X_corrected = np.zeros_like(X_data)
-    Y_corrected = np.zeros_like(Y_data)
+    X_corrected = np.zeros_like(X_data, dtype=np.float64)
+    Y_corrected = np.zeros_like(Y_data, dtype=np.float64)
     levels_corrected = np.zeros_like(level_data, dtype=np.float64)
 
     i = 0
@@ -141,8 +137,8 @@ def XY2altAz(lat, lon, RA_d, dec_d, Ho, rot_param, X_data, Y_data):
     """
 
     # Initialize final values containers
-    az_data = np.zeros_like(X_data)
-    alt_data = np.zeros_like(X_data)
+    az_data = np.zeros_like(X_data, dtype=np.float64)
+    alt_data = np.zeros_like(X_data, dtype=np.float64)
 
     # Convert declination to radians
     dec_rad = math.radians(dec_d)
@@ -213,9 +209,9 @@ def altAz2RADec(lat, lon, UT_corr, time_data, azimuth_data, altitude_data):
     """
 
     # Initialize final values containers
-    JD_data = np.zeros_like(azimuth_data)
-    RA_data = np.zeros_like(azimuth_data)
-    dec_data = np.zeros_like(azimuth_data)
+    JD_data = np.zeros_like(azimuth_data, dtype=np.float64)
+    RA_data = np.zeros_like(azimuth_data, dtype=np.float64)
+    dec_data = np.zeros_like(azimuth_data, dtype=np.float64)
 
     # Precalculate some parameters
     sl = math.sin(math.radians(lon))
@@ -370,100 +366,3 @@ def XY2CorrectedRADec(time_data, X_data, Y_data, level_data, UT_corr, lat, lon, 
 
 
     return JD_data, RA_data, dec_data, magnitude_data
-
-
-
-def findPointTimePairs(station_obj1, station_obj2, max_dt):
-    """ Find points that are closest in time. 
-
-    ...
-    @param max_dt: [float] maximum time difference between point pairs (in seconds)
-    """
-
-    max_dt = float(max_dt)/60/60/24
-
-    point_pairs = []
-
-    min_index = 0
-    for point1 in station_obj1.points:
-
-        min_diff = abs(point1[0] - station_obj2.points[min_index][0])
-
-        for k, point2 in enumerate(station_obj2.points):
-
-            # Calculate time difference between points
-            diff = abs(point1[0] - point2[0])
-
-            if diff < min_diff:
-                min_index = k
-                min_diff = diff
-
-        # Check if the difference in time is too large
-        if min_diff < max_dt:
-            # Add points to the list
-            point_pairs.append([point1, station_obj2.points[min_index]])
-
-            print point1, station_obj2.points[min_index]
-
-    return point_pairs
-
-
-
-if __name__ == '__main__':
-
-    # pp_name = 'KOP.cal'
-    pp_name = 'rgn_test/platepar_CMN2010.inf'
-
-    print parsePlatepar(pp_name)
-
-    # Load the data from the Platepar file
-    (lat, lon, elev, JD, Ho, X_res, Y_res, RA_d, dec_d, rot_param, F_scale, w_pix, mag_0, mag_lev, 
-        x_poly, y_poly, station_code) = parsePlatepar(pp_name)
-
-    # Data files from 2 stations
-    station1 = 'M_2011020405RIA0001.inf'
-    station2 = 'M_2011020405ZGR0001.inf'
-
-    # Parse station information
-    station_obj1 = parseInf(station1)
-    station_obj2 = parseInf(station2)
-
-    print station_obj1
-
-    point_pairs = findPointTimePairs(station_obj1, station_obj2, 2)
-
-    triangulated_points = []
-
-    # Run the triangulation procedure on paired points
-    for pair in point_pairs:
-
-        jd1, ra1, dec1, _ = pair[0]
-        jd2, ra2, dec2, _ = pair[1]
-
-        # Store triangulation results
-        triangulated_points.append(triangulate(pair[0][0], station_obj1.lat, station_obj1.lon, station_obj1.h, 
-            ra1, dec1, station_obj2.lat, station_obj2.lon, station_obj2.h, ra2, dec2))
-
-    print triangulated_points
-
-    triangulated_points = np.array(triangulated_points)
-
-    # Limit error
-    error_limit = triangulated_points[:,3]
-    good_indices = np.where(error_limit < 1000)
-
-    xs = triangulated_points[:,0][good_indices]
-    ys = triangulated_points[:,1][good_indices]
-    zs = triangulated_points[:,2][good_indices]
-
-    # Show triangulated points in 3D
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    ax.scatter(xs, ys, zs, c='b', marker='o')
-
-    ax.set_xlabel('Lat')
-    ax.set_ylabel('Lon')
-    ax.set_zlabel('h')
-
-    plt.show()
