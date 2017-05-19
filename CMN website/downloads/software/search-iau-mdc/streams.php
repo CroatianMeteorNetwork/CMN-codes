@@ -35,27 +35,27 @@
  if (isset($_REQUEST["str"])) $str=$_REQUEST["str"]; else $str="";
 
  
- echo '<label>Sol. lng. min:</label> <input type="number" name="sol0" value='.$sol0.'>';
- echo '<label>max:</label> <input type="number" name="sol1" value='.$sol1.'><br />';
- echo '<label>R.A. min:</label> <input type="number" name="ra0" value='.$ra0.'>';
- echo '<label>max:</label> <input type="number" name="ra1" value='.$ra1.'><br />';
- echo '<label>Dec. min:</label> <input type="number" name="de0" value='.$de0.'>'; 
- echo '<label>max:</label> <input type="number" name="de1" value='.$de1.'><br />';
- echo '<label>Vg min:</label> <input type="number" name="vg0" value='.$vg0.'>'; 
- echo '<label>max:</label> <input type="number" name="vg1" value='.$vg1.'><br />';
+ echo '<label>Sol. lng. min:</label> <input type="number" step="any" name="sol0" value='.$sol0.'>';
+ echo '<label>max:</label> <input type="number" step="any" name="sol1" value='.$sol1.'><br />';
+ echo '<label>R.A. min:</label> <input type="number" step="any" name="ra0" value='.$ra0.'>';
+ echo '<label>max:</label> <input type="number" step="any" name="ra1" value='.$ra1.'><br />';
+ echo '<label>Dec. min:</label> <input type="number" step="any" name="de0" value='.$de0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="de1" value='.$de1.'><br />';
+ echo '<label>Vg min:</label> <input type="number" step="any" name="vg0" value='.$vg0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="vg1" value='.$vg1.'><br />';
  
- echo '<label>a min:</label> <input type="number" name="a0" value='.$a0.'>'; 
- echo '<label>max:</label> <input type="number" name="a1" value='.$a1.'><br />';
- echo '<label>q min:</label> <input type="number" name="q0" value='.$q0.'>'; 
- echo '<label>max:</label> <input type="number" name="q1" value='.$q1.'><br />'; 
- echo '<label>e min:</label> <input type="number" name="e0" value='.$e0.'>'; 
- echo '<label>max:</label> <input type="number" name="e1" value='.$e1.'><br />';
- echo '<label>Peri. min:</label> <input type="number" name="peri0" value='.$peri0.'>'; 
- echo '<label>max:</label> <input type="number" name="peri1" value='.$peri1.'><br />';
- echo '<label>Node min:</label> <input type="number" name="node0" value='.$node0.'>'; 
- echo '<label>max:</label> <input type="number" name="node1" value='.$node1.'><br />';
- echo '<label>Incl. min:</label> <input type="number" name="incl0" value='.$incl0.'>'; 
- echo '<label>max:</label> <input type="number" name="incl1" value='.$incl1.'><br />';
+ echo '<label>a min:</label> <input type="number" step="any" name="a0" value='.$a0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="a1" value='.$a1.'><br />';
+ echo '<label>q min:</label> <input type="number" step="any" name="q0" value='.$q0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="q1" value='.$q1.'><br />'; 
+ echo '<label>e min:</label> <input type="number" step="any" name="e0" value='.$e0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="e1" value='.$e1.'><br />';
+ echo '<label>Peri. min:</label> <input type="number" step="any" name="peri0" value='.$peri0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="peri1" value='.$peri1.'><br />';
+ echo '<label>Node min:</label> <input type="number" step="any" name="node0" value='.$node0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="node1" value='.$node1.'><br />';
+ echo '<label>Incl. min:</label> <input type="number" step="any" name="incl0" value='.$incl0.'>'; 
+ echo '<label>max:</label> <input type="number" step="any" name="incl1" value='.$incl1.'><br />';
  
  echo '<label>Contains string:</label> <input type="text" name="str" value='.$str.'><br />';
  ?></p> 
