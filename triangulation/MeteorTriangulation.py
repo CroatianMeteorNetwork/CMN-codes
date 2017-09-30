@@ -464,7 +464,7 @@ def triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec
     Xi_avg, Yi_avg, Zi_avg = (Xi1+Xi2)/2, (Yi1+Yi2)/2, (Zi1+Zi2)/2
 
     # Get point in geographical coordinates
-    lon_avg, lat_avg, elevation = cartesian2Geo(julian_date, Xi_avg, Yi_avg, Zi_avg)
+    lat_avg, lon_avg, elevation = cartesian2Geo(julian_date, Xi_avg, Yi_avg, Zi_avg)
 
     # Angle of intersection of two vectors (radians)
     angle = math.acos((xt1*xt2 + yt1*yt2 + zt1*zt2) / ((xt1**2 + yt1**2 + zt1**2) * (xt2**2 + yt2**2 + zt2**2)))
