@@ -381,13 +381,16 @@ def equatorialCoordPrecession(start_epoch, final_epoch, ra, dec):
     Arguments:
         start_epoch: [float] Julian date of the starting epoch
         final_epoch: [float] Julian date of the final epoch
-        ra: [float] non-corrected right ascension in radians
-        dec: [float] non-corrected declination in radians
+        ra: [float] non-corrected right ascension in degrees
+        dec: [float] non-corrected declination in degrees
     
     Return:
         (ra, dec): [tuple of floats] precessed equatorial coordinates in degrees
 
     """
+
+    ra = math.radians(ra)
+    dec = math.radians(dec)
 
     T = (start_epoch - J2000_JD.days)/36525.0
     t = (final_epoch - start_epoch)/36525.0
@@ -401,26 +404,26 @@ def equatorialCoordPrecession(start_epoch, final_epoch, ra, dec):
     zeta, z, theta = map(math.radians, (zeta, z, theta))
 
     # Calculate the next set of parameters
-    A = np.cos(dec)  *np.sin(ra + zeta)
-    B = np.cos(theta)*np.cos(dec)*np.cos(ra + zeta) - np.sin(theta)*np.sin(dec)
-    C = np.sin(theta)*np.cos(dec)*np.cos(ra + zeta) + np.cos(theta)*np.sin(dec)
+    A = math.cos(dec)  *math.sin(ra + zeta)
+    B = math.cos(theta)*math.cos(dec)*math.cos(ra + zeta) - math.sin(theta)*math.sin(dec)
+    C = math.sin(theta)*math.cos(dec)*math.cos(ra + zeta) + math.cos(theta)*math.sin(dec)
 
     # Calculate right ascension
-    ra_corr = np.arctan2(A, B) + z
+    ra_corr = math.atan2(A, B) + z
 
     # Calculate declination (apply a different equation if close to the pole, closer then 0.5 degrees)
-    if (np.pi/2 - np.abs(dec)) < np.radians(0.5):
-        dec_corr = np.arccos(np.sqrt(A**2 + B**2))
+    if (math.pi/2 - abs(dec)) < math.radians(0.5):
+        dec_corr = math.arccos(math.sqrt(A**2 + B**2))
     else:
-        dec_corr = np.arcsin(C)
+        dec_corr = math.asin(C)
 
     # Wrap right ascension to [0, 2*pi] range
-    ra_corr = ra_corr%(2*np.pi)
+    ra_corr = ra_corr%(2*math.pi)
 
     # Wrap declination to [-pi/2, pi/2] range
-    dec_corr = (dec_corr + np.pi/2)%np.pi - np.pi/2
+    dec_corr = (dec_corr + math.pi/2)%math.pi - math.pi/2
 
-    return ra_corr, dec_corr
+    return math.degrees(ra_corr), math.degrees(dec_corr)
     
 
 
@@ -497,6 +500,10 @@ if __name__ == '__main__':
     dec2 = 19.200 # deg
 
     ######################
+
+    # # Precess ra, dec
+    # ra1, dec1 = equatorialCoordPrecession(J2000_JD.days, julian_date, ra1, dec1)
+    # ra2, dec2 = equatorialCoordPrecession(J2000_JD.days, julian_date, ra2, dec2)
 
     # Triangulate!
     point_params = triangulate(julian_date, lon1, lat1, h1, ra1, dec1, lon2, lat2, h2, ra2, dec2)
