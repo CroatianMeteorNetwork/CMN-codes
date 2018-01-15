@@ -27,3 +27,7 @@ CMN-codes
     
   A test project I used to introduce myself to image processing with python. It is a slow and non-optimized brute-force approach and uses loops. A very bad code indeed.
   I don't have any intention to improve it, as it was just a quick introductory exercise. Use at your own risk.
+
+  * ## astroMic
+
+  Tiny tool for abusing microphone input as radiometer ADC.
